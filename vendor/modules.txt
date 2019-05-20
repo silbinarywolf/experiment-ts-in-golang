@@ -1,0 +1,23 @@
+# github.com/dlclark/regexp2 v1.1.6
+github.com/dlclark/regexp2
+github.com/dlclark/regexp2/syntax
+# github.com/dop251/goja v0.0.0-20190429205339-8d6ee3d16611
+github.com/dop251/goja
+github.com/dop251/goja/ast
+github.com/dop251/goja/file
+github.com/dop251/goja/parser
+github.com/dop251/goja/token
+# github.com/go-sourcemap/sourcemap v2.1.2+incompatible
+github.com/go-sourcemap/sourcemap
+github.com/go-sourcemap/sourcemap/internal/base64vlq
+# golang.org/x/text v0.3.2
+golang.org/x/text/cases
+golang.org/x/text/collate
+golang.org/x/text/language
+golang.org/x/text/unicode/norm
+golang.org/x/text/internal
+golang.org/x/text/transform
+golang.org/x/text/internal/colltab
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
