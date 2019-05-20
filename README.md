@@ -1,5 +1,7 @@
 # TypeScript Compiler with Golang and Goja Experiment
 
+**This was hacked together in about 3-4 hours**
+
 An experiment to see if the TypeScript compiler can be embedded into a Golang application using Goja as the JavaScript interpreter/VM.
 
 This [main.ts](testdata/.fel/main.ts) file is attempted to be compiled, ie.
