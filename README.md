@@ -25,4 +25,4 @@ main.main()
         D:/GoProjectsModules/compile-typescript/main.go:210 +0xd3b
 ```
 
-As you can see, the current compile-time is huge for a single file. A suspect because the TypeScript compiler is currently spending the bulk of it's time parsing the type definition files found in the [typescriptServices](typescriptServices/v3.4.5) folder.
+As you can see, the current compile-time is huge for a single file. I suspect because the TypeScript compiler is currently spending the bulk of it's time parsing the type definition files found in the [typescriptServices](typescriptServices/v3.4.5) folder.
