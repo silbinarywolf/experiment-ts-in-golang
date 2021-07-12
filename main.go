@@ -4,21 +4,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"time"
 	"sort"
 	"strings"
+	"time"
+
 	//"path"
 	"path/filepath"
 
-	"github.com/spacemonkeygo/monotime"
-	"github.com/karrick/godirwalk"
 	"github.com/dop251/goja"
+	"github.com/dop251/goja/parser"
+	"github.com/karrick/godirwalk"
+	"github.com/spacemonkeygo/monotime"
 )
 
 const typescriptCompilerDir = "typescriptServices/v3.4.5"
 
 type File struct {
-	Path string
+	Path    string
 	Content string
 }
 
@@ -37,30 +39,30 @@ func main() {
 	var libs []File
 	{
 		err := godirwalk.Walk(typescriptCompilerDir, &godirwalk.Options{
-	        Callback: func(osPathname string, de *godirwalk.Dirent) error {
-	        	ext := filepath.Ext(osPathname)
-	        	// TODO(Jake): 2019-05-20
-	        	// Need to make this more robust and only check for ".d.ts"
-	        	if ext == ".ts" {
-	        		// NOTE(Jake): 2019-05-20
-	        		// Normalize path in Windows
-	        		osPathname = strings.ReplaceAll(osPathname, "\\", "/")
-	        		content, err := ioutil.ReadFile(osPathname)
-			    	if err != nil {
-			    		log.Fatalln(err)
-			    	}
-	        		libs = append(libs, File{
-	        			Path: osPathname,
-	        			Content: string(content),
-	        		})
-        		}
-	            return nil
-	        },
-	        Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
-	    })
-	    if err != nil {
-	    	log.Fatalln(err)
-	    }
+			Callback: func(osPathname string, de *godirwalk.Dirent) error {
+				ext := filepath.Ext(osPathname)
+				// TODO(Jake): 2019-05-20
+				// Need to make this more robust and only check for ".d.ts"
+				if ext == ".ts" {
+					// NOTE(Jake): 2019-05-20
+					// Normalize path in Windows
+					osPathname = strings.ReplaceAll(osPathname, "\\", "/")
+					content, err := ioutil.ReadFile(osPathname)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					libs = append(libs, File{
+						Path:    osPathname,
+						Content: string(content),
+					})
+				}
+				return nil
+			},
+			Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
+		})
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	// Load typescript files
@@ -68,34 +70,34 @@ func main() {
 	var filePaths []string
 	{
 		err := godirwalk.Walk(projectDir, &godirwalk.Options{
-	        Callback: func(osPathname string, de *godirwalk.Dirent) error {
-	        	ext := filepath.Ext(osPathname)
-	        	if ext == ".ts" ||
-	        		ext == ".tsx" {
-	        		// NOTE(Jake): 2019-05-20
-	        		// Normalize path in Windows
-	        		osPathname = strings.ReplaceAll(osPathname, "\\", "/")
-	        		filePaths = append(filePaths, osPathname)
-        		}
-	            return nil
-	        },
-	        Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
-	    })
-	    if err != nil {
-	    	log.Fatalln(err)
-	    }
-	    sort.Strings(filePaths)
-	    for _, filePath := range filePaths {
-	    	content, err := ioutil.ReadFile(filePath)
-	    	if err != nil {
-	    		log.Fatalln(err)
-	    	}
-	    	
-	    	files = append(files, File{
-	    		Path: filePath,
-	    		Content: string(content),
-	    	})
-	    }
+			Callback: func(osPathname string, de *godirwalk.Dirent) error {
+				ext := filepath.Ext(osPathname)
+				if ext == ".ts" ||
+					ext == ".tsx" {
+					// NOTE(Jake): 2019-05-20
+					// Normalize path in Windows
+					osPathname = strings.ReplaceAll(osPathname, "\\", "/")
+					filePaths = append(filePaths, osPathname)
+				}
+				return nil
+			},
+			Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
+		})
+		if err != nil {
+			log.Fatalln(err)
+		}
+		sort.Strings(filePaths)
+		for _, filePath := range filePaths {
+			content, err := ioutil.ReadFile(filePath)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			files = append(files, File{
+				Path:    filePath,
+				Content: string(content),
+			})
+		}
 	}
 
 	// Setup TypeScript
@@ -109,6 +111,9 @@ func main() {
 		// NOTE: about 4ms
 		//fmt.Printf("File load Time taken: %s", time.Since(now))
 		vm = goja.New()
+		// note(jae): 2021-07-12
+		// we do this otherwise the build fails due to missing *.map file for typescriptServices.js
+		vm.SetParserOptions(parser.WithDisableSourceMaps)
 		if _, err := vm.RunString(string(buf)); err != nil {
 			log.Fatalln(err)
 		}
